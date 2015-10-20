@@ -1,0 +1,14 @@
+C:\Users\Asus\Downloads\proxyscrape-master\proxyscrape-master\WebAsyncReq\bin\Debug\WebAsyncReq.dll
+C:\Users\Asus\Downloads\proxyscrape-master\proxyscrape-master\WebAsyncReq\bin\Debug\WebAsyncReq.pdb
+C:\Users\Asus\Downloads\proxyscrape-master\proxyscrape-master\WebAsyncReq\obj\Debug\WebAsyncReq.csprojResolveAssemblyReference.cache
+C:\Users\Asus\Downloads\proxyscrape-master\proxyscrape-master\WebAsyncReq\obj\Debug\WebAsyncReq.dll
+C:\Users\Asus\Downloads\proxyscrape-master\proxyscrape-master\WebAsyncReq\obj\Debug\WebAsyncReq.pdb
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\proxyscrape-master\proxyscrape-master\WebAsyncReq\bin\Debug\WebAsyncReq.dll
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\proxyscrape-master\proxyscrape-master\WebAsyncReq\bin\Debug\WebAsyncReq.pdb
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\proxyscrape-master\proxyscrape-master\WebAsyncReq\obj\Debug\WebAsyncReq.csprojResolveAssemblyReference.cache
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\proxyscrape-master\proxyscrape-master\WebAsyncReq\obj\Debug\WebAsyncReq.dll
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\proxyscrape-master\proxyscrape-master\WebAsyncReq\obj\Debug\WebAsyncReq.pdb
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\DCW\WebAsyncReq\bin\Debug\WebAsyncReq.dll
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\DCW\WebAsyncReq\bin\Debug\WebAsyncReq.pdb
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\DCW\WebAsyncReq\obj\Debug\WebAsyncReq.dll
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\DCW\WebAsyncReq\obj\Debug\WebAsyncReq.pdb

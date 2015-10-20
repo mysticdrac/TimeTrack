@@ -1,0 +1,8 @@
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\proxyscrape-master\proxyscrape-master\WebAsyncReq\bin\Release\WebAsyncReq.dll
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\proxyscrape-master\proxyscrape-master\WebAsyncReq\bin\Release\WebAsyncReq.pdb
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\proxyscrape-master\proxyscrape-master\WebAsyncReq\obj\Release\WebAsyncReq.dll
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\proxyscrape-master\proxyscrape-master\WebAsyncReq\obj\Release\WebAsyncReq.pdb
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\DCW\WebAsyncReq\bin\Release\WebAsyncReq.dll
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\DCW\WebAsyncReq\bin\Release\WebAsyncReq.pdb
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\DCW\WebAsyncReq\obj\Release\WebAsyncReq.dll
+C:\Users\Asus\Documents\Visual Studio 2015\Projects\DCW\WebAsyncReq\obj\Release\WebAsyncReq.pdb
