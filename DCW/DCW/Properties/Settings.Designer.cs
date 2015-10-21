@@ -79,5 +79,29 @@ namespace DCW.Properties {
                 return ((string)(this["UpdateServer"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public uint Interval {
+            get {
+                return ((uint)(this["Interval"]));
+            }
+            set {
+                this["Interval"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Task {
+            get {
+                return ((string)(this["Task"]));
+            }
+            set {
+                this["Task"] = value;
+            }
+        }
     }
 }

@@ -17,5 +17,11 @@
     <Setting Name="UpdateServer" Type="System.String" Scope="Application">
       <Value Profile="(Default)">http://text4u.xyz/version.php</Value>
     </Setting>
+    <Setting Name="Interval" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="Task" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

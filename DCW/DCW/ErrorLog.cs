@@ -12,8 +12,8 @@ namespace DCW
        internal static void _WriteLog(string text) {
             try
             {
-                //Write Error Log to data/tmp/log/{date and time Logging}.log
-                File.AppendAllText(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/data/tmp/Log" + DateTime.Now.ToString("dd-MM-YY") + ".log", DateTime.Now.ToString("HH:mm:ss")+"--"+text+"\n");
+                //Write Error Log to data/Log/{date and time Logging}.log
+                File.AppendAllText(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/data/Log" + DateTime.Now.ToString("dd-MM-YY") + ".log", DateTime.Now.ToString("HH:mm:ss")+"--"+text+"\n");
             }
             catch(System.Exception ex) {
 

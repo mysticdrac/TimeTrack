@@ -83,6 +83,7 @@
             this.txbx_pass.Size = new System.Drawing.Size(251, 29);
             this.txbx_pass.TabIndex = 29;
             this.txbx_pass.Text = "Password";
+            this.txbx_pass.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txbx_pass_KeyUp);
             // 
             // txbx_user
             // 

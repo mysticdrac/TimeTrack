@@ -26,7 +26,8 @@ namespace WebAsyncReq
         bool _byte = false;
         bool _ismultipart = false;
         string _boundary = "";
-        string _filename = "";
+        string _filename = null;
+        string _referrer = "";
         public bool SetSSL {
 
             set {
@@ -60,29 +61,29 @@ namespace WebAsyncReq
             set {
                 Cookies = value;
             }
-        
+
         }
 
         public int SetTimeOut {
             set {
                 DefaultTimeout = value;
-            
+
             }
-        
+
         }
         public string SetPostData {
             set {
                 _Postdata = value;
             }
-        
+
         }
 
         public WebHeaderCollection GetResponseHeader {
             get {
 
-                return rstop.Response.Headers; 
+                return rstop.Response.Headers;
             }
-        
+
         }
 
         private static bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
@@ -93,7 +94,7 @@ namespace WebAsyncReq
                 return true;
             }
 
-          return false;
+            return false;
         }
 
         public bool IsXmlRequest {
@@ -133,7 +134,7 @@ namespace WebAsyncReq
                 request.AllowAutoRedirect = false;
             }
             bool post = false;
-            
+
             if (!string.IsNullOrEmpty(_Postdata))
             {
                 if (_ismultipart)
@@ -142,9 +143,15 @@ namespace WebAsyncReq
 
                     request.ContentType = "multipart/form-data; boundary=" + _boundary;
                     string footer = "\r\n--" + _boundary + "--\r\n";
+                    if (_filename != null)
+                    {
+                        request.ContentLength = _Postdata.Length + File.ReadAllBytes(_filename).Length + footer.Length;
+                    }
+                    else {
+                        request.ContentLength = _Postdata.Length + footer.Length;
 
-                    request.ContentLength = _Postdata.Length + File.ReadAllBytes(_filename).Length+footer.Length;
 
+                    }
                 }
                 else
                 {
@@ -158,10 +165,16 @@ namespace WebAsyncReq
             }
             if (_IsXMLRequest) {
                 request.Headers.Add("X-Requested-With", "XMLHttpRequest");
-                
+
             }
-           
-            request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*,;q=0.8";
+
+            if (!string.IsNullOrEmpty(_referrer)) {
+
+                request.Referer = _referrer;
+
+            }
+
+                request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*,;q=0.8";
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Dragon/33.1.0.0 Chrome/33.0.1750.152 Safari/537.36";
             request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
             request.Timeout = 5000;
@@ -169,10 +182,10 @@ namespace WebAsyncReq
             request.ServicePoint.Expect100Continue = false;
             if (post) {
 
-                    request.BeginGetRequestStream(new AsyncCallback(GetRequestStreamCallback), request );
-                    allDone.WaitOne();
-                    allDone.Reset();
-                
+                request.BeginGetRequestStream(new AsyncCallback(GetRequestStreamCallback), request);
+                allDone.WaitOne();
+                allDone.Reset();
+
             }
 
         }
@@ -183,29 +196,45 @@ namespace WebAsyncReq
             }
         }
 
+        public string SetReferrer {
+            set {
+
+                _referrer = value;
+            }
+
+        }
         void GetRequestStreamCallback(IAsyncResult asynchronousResult)
         {
-           
-
-            //RequestState rs = (RequestState)asynchronousResult.AsyncState;
-            HttpWebRequest request = (HttpWebRequest)asynchronousResult.AsyncState;
-            
-            Stream postStream = request.EndGetRequestStream(asynchronousResult);
-
-            byte[] byteArray = Encoding.UTF8.GetBytes(_Postdata);
-
-            postStream.Write(byteArray, 0, _Postdata.Length);
-
-            if (_ismultipart)
+            try
             {
-                byte[] file = File.ReadAllBytes(_filename);
-                postStream.Write(file, 0, file.Length);
-                string footer = "\r\n---" + _boundary + "--\r\n";
-                postStream.Write(Encoding.UTF8.GetBytes(footer), 0, Encoding.UTF8.GetByteCount(footer));
+
+                //RequestState rs = (RequestState)asynchronousResult.AsyncState;
+                HttpWebRequest request = (HttpWebRequest)asynchronousResult.AsyncState;
+
+                Stream postStream = request.EndGetRequestStream(asynchronousResult);
+
+                byte[] byteArray = Encoding.UTF8.GetBytes(_Postdata);
+
+                postStream.Write(byteArray, 0, _Postdata.Length);
+
+                if (_ismultipart)
+                {
+                    if (_filename != null)
+                    {
+                        byte[] file = File.ReadAllBytes(_filename);
+                        postStream.Write(file, 0, file.Length);
+                    }
+                    string footer = "\r\n--" + _boundary + "--\r\n";
+
+                    postStream.Write(Encoding.UTF8.GetBytes(footer), 0, Encoding.UTF8.GetByteCount(footer));
+                }
+                postStream.Close();
+                allDone.Set();
             }
-            postStream.Close();
-            allDone.Set();
-           
+            catch {
+                allDone.Set();
+
+            }
 
         }
 

@@ -11,7 +11,7 @@ namespace DCW
             {
                 char[] chars = new char[62];
                 chars =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
                 byte[] data = new byte[1];
                 using (RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider())
                 {

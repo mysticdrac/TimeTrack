@@ -152,5 +152,20 @@ namespace DCW
 
             }
         }
+
+        private void txbx_pass_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter) {
+                if (!string.IsNullOrEmpty(txbx_user.Text.Trim()) && !string.IsNullOrEmpty(txbx_pass.Text.Trim()))
+                {
+                    btn_login.PerformClick();
+                }
+                else
+                {
+                    btn_login.Focus();
+
+                }
+            }
+        }
     }
 }

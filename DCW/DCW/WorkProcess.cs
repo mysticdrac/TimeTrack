@@ -65,17 +65,25 @@ namespace DCW
                     string url = context[0] as string;
                     string requestdata = (string)context[1];
                     string Method=(string)context[2];
-                    string _boundary = "";
-                    string _filename = "";
-                    if (context.Length > 3)
-                     {
-                        _boundary = (string)context[3].ToString();
-                        _filename = (string)context[4];
+                    bool _ismultipart = (bool)context[3];
+                    string _boundary = null;
+                    string _filename = null;
+                    string _referrer = "";
+
+                    if (context.Length > 4) {
+                    _referrer = (string)context[4];
+                   
+                     }
+                    if (_ismultipart)
+                    {
+                        _boundary = (string)context[5].ToString();
 
                     }
-
-
-                    WebProxy proxy = null;                
+                if (context.Length > 6) {
+                        _filename = (string)context[6]; 
+                    }
+                   
+                WebProxy proxy = null;                
 
                    
                     if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute)) {
@@ -84,21 +92,23 @@ namespace DCW
                     }
                     req = new WebAsyncReq.WebAsyncReq();
                     if (!string.IsNullOrEmpty(_boundary) && !string.IsNullOrEmpty(_filename)) {
-                        req.SetBoundary = _boundary;
                         req.SetFilename = _filename;
-                        req._IsMultipart = true;
                     }
+                    req.SetBoundary = _boundary;
 
-
+                    req._IsMultipart = _ismultipart;
                     req.SetSSL = false;
                     req.SetTimeOut = DefaultTimeout;
-                    if(Method.ToLower().Equals("post")){
-                    req.SetPostData=requestdata;
-                    
-                    }
-                    
-                    
-                    object result = req.Request(url,proxy);
+                    req.SetReferrer = _referrer;
+
+                        if (Method.ToLower().Equals("post")){
+                            req.SetPostData=requestdata;
+
+
+                        }
+
+
+                object result = req.Request(url,proxy);
                     if (result != null) {
                         return result;
                      }else
