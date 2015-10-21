@@ -10,18 +10,27 @@ namespace DCW
 {
     static class Program
     {
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool SetForegroundWindow(IntPtr hWnd);
+        #region Pinvoke SetForgroundWindow
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            static extern bool SetForegroundWindow(IntPtr hWnd);
+        #endregion
         /// <summary>
-        /// The main entry point for the application.
+        #region Main Entry Point For Application
         /// </summary>
         [STAThread]
         static void Main()
         {
             bool createdNew = true;
-            using (Mutex mutex = new Mutex(true,System.Reflection.Assembly.GetExecutingAssembly().GetName().Name, out createdNew))
+            /* check for current assembly exits using mutex 
+             * (Refs: https://msdn.microsoft.com/en-us/library/system.threading.mutex(v=vs.110).aspx)
+             *
+             */
+            using (Mutex mutex = new Mutex(true, System.Reflection.Assembly.GetExecutingAssembly().GetName().Name, out createdNew))
             {
+                /*
+                if not Application Exists, Mutex will return true
+                 */
                 if (createdNew)
                 {
                     CheckIni();
@@ -29,8 +38,12 @@ namespace DCW
                     Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new MainFrm());
                 }
-                else
+                else 
                 {
+                    /*
+                     * if Application Exists, select the process and set to foreground
+                     */
+
                     Process current = Process.GetCurrentProcess();
                     foreach (Process process in Process.GetProcessesByName(current.ProcessName))
                     {
@@ -42,26 +55,36 @@ namespace DCW
                     }
                 }
             }
-        }
+        } 
+        #endregion
 
-        static void CheckIni() {
-            //load file
-            string path = Application.StartupPath + "/data";
-            string file = path + "/Timetrack.ini";
+        #region CheckIni --Check if Required Files / Folders Exists. if Not---Create it
+        static void CheckIni()
+        {
+            string[] paths = new string[3];
+            paths[0] = Application.StartupPath + "/data";
+            paths[1] = paths[0] + "/Log";
+            paths[2] = paths[0] + "/tmp";
 
-            if (!System.IO.File.Exists(path))
+            string file = paths[0] + "/Timetrack.ini";
+
+            foreach (string path in paths)
             {
-                System.IO.Directory.CreateDirectory(path);
+                if (!System.IO.Directory.Exists(path))
+                {
+                    System.IO.Directory.CreateDirectory(path);
+                }
             }
-
             if (!System.IO.File.Exists(file))
             {
 
                 System.IO.File.Create(file);
             }
 
+            
 
 
-        }
+        } 
+        #endregion
     }
 }

@@ -26,9 +26,10 @@ namespace DCW
             InitializeComponent();
         }
 
+        #region Button Close Clicked
         private void btnClose_Click(object sender, EventArgs e)
         {
-           
+
             DialogResult d = MessageBox.Show("Are you sure You want to quit ?", "Confirmation", MessageBoxButtons.YesNoCancel);
             if (d == DialogResult.Cancel || d == DialogResult.No)
             {
@@ -39,7 +40,8 @@ namespace DCW
 
                 Application.Exit();
             }
-        }
+        } 
+        #endregion
 
         private void btnMin_Click(object sender, EventArgs e)
         {

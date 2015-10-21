@@ -23,7 +23,17 @@ namespace DCW
         string boundary = "";
         string propFormat;
         string fileHeaderFormat;
-        string _ERROR;
+        string[] _ERROR = new string[7] 
+        {
+            "Collecting Report.....",
+            "Reporting.....",
+            "Error Collecting Report",
+            "Error Contacting Server",
+            "Error while Reporting !",
+            "Work Reported ! ",
+             "Problem adjust Timer"
+        };
+        const string _referrer = "http://track.designcircuitworks.com/"; 
         public TimeTrackClass() {
 
 
@@ -72,22 +82,12 @@ namespace DCW
 
         internal int Login(object[] obj)
         {
-            _ERROR = "";
             string Username = (string)obj[0];
             string Password = (string)obj[1];
             string Server = (string)obj[2];
             WorkProcess wrkproc = new WorkProcess(this);
-            var boundary = "------WebKitFormBoundary" + Helper.GetUniqueKey(16);
-            var newLine = Environment.NewLine;
-            var propFormat = "--" + boundary + newLine +
-                                "Content-Disposition: form-data; name=\"{0}\"" + newLine + newLine +
-                                "{1}" + newLine;
-            var fileHeaderFormat = "--" + boundary + newLine +
-                                   "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"" + newLine + "Content-Type: {2}" + newLine + newLine;
-
-
-
-
+            boundary = "------WebKitFormBoundary" + Helper.GetUniqueKey(16);
+           
             Hashtable _hash = new Hashtable();
             _hash.Add("user", Username);
             _hash.Add("pass", Password);
@@ -102,7 +102,7 @@ namespace DCW
 
             }
 
-            object result = wrkproc.AsyncRequest(new object[] { Server, requestdata, "post",true,"http://track.designcircuitworks.com/",boundary});
+            object result = wrkproc.AsyncRequest(new object[] { Server, requestdata, "post",true,_referrer,boundary});
             if (result != null)
             {
               
@@ -183,7 +183,7 @@ namespace DCW
             P.lblinfo.Invoke((MethodInvoker)delegate {
                 P.lblinfo.Text = "";
             });
-            _ERROR = "";
+
             if (!_isStart)
             {
                
@@ -213,7 +213,7 @@ namespace DCW
             try {
                 P.lblinfo.Invoke((MethodInvoker)delegate {
 
-                    P.lblinfo.Text = "Collecting Report.....";
+                    P.lblinfo.Text = _ERROR[0];
                 });
                 string _filename = null;
                 using (var bmpScreenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width,
@@ -248,7 +248,7 @@ namespace DCW
         void uploadScreenshot()
         {
             P.lblinfo.Invoke((MethodInvoker)delegate {
-                P.lblinfo.Text = "Reporting.....";
+                P.lblinfo.Text = _ERROR[1];
 
             });
 
@@ -262,7 +262,7 @@ namespace DCW
            
             string _filename = screenShot();
             if (_filename == null) {
-                StopBtn_Capture("Error Collecting Report");
+                StopBtn_Capture(_ERROR[2]);
                 return;
             }
             string requestdata = "";
@@ -280,12 +280,21 @@ namespace DCW
             WorkProcess wrkproc = new WorkProcess(this);
             
 
-            object result = wrkproc.AsyncRequest(new object[] { Properties.Settings.Default.Server, requestdata, "post", true,"http://track.designcircuitworks.com/", boundary, _filename });
-            if (result != null)
+            object result = wrkproc.AsyncRequest(new object[] { Properties.Settings.Default.Server, requestdata, "post", true, _referrer, boundary, _filename });
+            if (result == null)
             {
-                if (result.ToString().ToLower().IndexOf("received")>-1)
-                {
+                ErrorLog._WriteLog(_ERROR[3]);
+                StopBtn_Capture(_ERROR[3]);
 
+
+            }
+            else {
+                if (result.ToString().ToLower().IndexOf("received") < 0)
+                {
+                    ErrorLog._WriteLog(_ERROR[4]);
+                    StopBtn_Capture(_ERROR[4]);
+                }
+                else { 
                     try
                     {
                         System.IO.File.Delete(_filename);
@@ -313,43 +322,20 @@ namespace DCW
                             Properties.Settings.Default.Save();
 
                             
-                            _ERROR = "Work Reported ! ";
                             P.lblinfo.Invoke((MethodInvoker)delegate {
-                                P.lblinfo.Text = _ERROR;
+                                P.lblinfo.Text = _ERROR[5];
 
-                            },_ERROR);
+                            },_ERROR[5]);
 
                         }
                         catch {
-                            _ERROR = "Problem adjust Timer";
-                            ErrorLog._WriteLog(_ERROR);
-                            StopBtn_Capture(_ERROR);
-                            return;
+                            ErrorLog._WriteLog(_ERROR[6]);
+                            StopBtn_Capture(_ERROR[6]);
 
                         }
                     }
                 }
-                else
-                {
-                    _ERROR = "Error while Reporting !";
-                    ErrorLog._WriteLog(_ERROR);
-                    StopBtn_Capture(_ERROR);
-                    return;
-                }
-
-
             }
-            else
-            {
-                _ERROR = "Server not response";
-                ErrorLog._WriteLog(_ERROR);
-                StopBtn_Capture(_ERROR);
-                return;
-
-            }
-
-
-
         }
 
 
