@@ -13,7 +13,7 @@ namespace DCW
             try
             {
                 //Write Error Log to data/Log/{date and time Logging}.log
-                File.AppendAllText(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/data/Log/" + DateTime.Now.ToString("dd-MM-yy") + ".log", DateTime.Now.ToString("HH:mm:ss")+"--"+text+"\n");
+                File.AppendAllText(Properties.Settings.Default.LogFolder+"\\" + DateTime.Now.ToString("dd-MM-yy") + ".log", DateTime.Now.ToString("HH:mm:ss")+"--"+text+"\n");
             }
             catch(System.Exception ex) {
 

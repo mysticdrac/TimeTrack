@@ -48,12 +48,12 @@ namespace DCW
             WindowState = FormWindowState.Minimized;
 
         }
-
+       
         
         private void MainFrm_Load(object sender, EventArgs e)
         {
             CenterToScreen();           
-            LoadCred(Application.StartupPath+"/data/Timetrack.ini");
+            LoadCred(Properties.Settings.Default.IniLocation);
             LoginForm frm = new LoginForm(this);
             groupBox2.Controls.Add(frm);
             frm.Dock = DockStyle.Fill;
@@ -171,7 +171,7 @@ namespace DCW
                     _writestr += "Username =" + Properties.Settings.Default.Username + Environment.NewLine;
                     _writestr += "Password =" + Properties.Settings.Default.Password + Environment.NewLine;
 
-                    System.IO.File.WriteAllText(Application.StartupPath+"/data/Timetrack.ini",_writestr);
+                    System.IO.File.WriteAllText(Properties.Settings.Default.IniLocation,_writestr);
                     Properties.Settings.Default.Reset();
                     Properties.Settings.Default.Save();
                 }

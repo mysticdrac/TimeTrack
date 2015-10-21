@@ -58,15 +58,21 @@ namespace DCW
         } 
         #endregion
 
-        #region CheckIni --Check if Required Files / Folders Exists. if Not---Create it
+        #region CheckIni --Check if Required Files / Folders Exists. if Not,Create it and store to settings 
         static void CheckIni()
         {
             string[] paths = new string[3];
-            paths[0] = Application.StartupPath + "/data";
-            paths[1] = paths[0] + "/Log";
-            paths[2] = paths[0] + "/tmp";
+            paths[0] = Application.StartupPath + "\\data";
+            paths[1] = paths[0] + "\\Log";
+            paths[2] = paths[0] + "\\tmp";
+            string inifile = paths[0] + "\\Timetrack.ini";
+            Properties.Settings.Default.DataFolder = paths[0];
+            Properties.Settings.Default.LogFolder = paths[1];
+            Properties.Settings.Default.TmpFolder = paths[2];
+            Properties.Settings.Default.IniLocation = inifile;
+            Properties.Settings.Default.Save();
 
-            string file = paths[0] + "/Timetrack.ini";
+            System.Diagnostics.Debug.WriteLine(Properties.Settings.Default.DataFolder);
 
             foreach (string path in paths)
             {
@@ -75,10 +81,11 @@ namespace DCW
                     System.IO.Directory.CreateDirectory(path);
                 }
             }
-            if (!System.IO.File.Exists(file))
+
+            if (!System.IO.File.Exists(inifile))
             {
 
-                System.IO.File.Create(file);
+                System.IO.File.Create(inifile);
             }
 
             

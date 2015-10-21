@@ -163,7 +163,6 @@
             this.Name = "MainFrm";
             this.Padding = new System.Windows.Forms.Padding(2);
             this.ShowInTaskbar = false;
-            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainFrm_FormClosing);
             this.Load += new System.EventHandler(this.MainFrm_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MainFrm_MouseDown);

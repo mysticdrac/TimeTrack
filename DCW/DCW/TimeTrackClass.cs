@@ -36,23 +36,22 @@ namespace DCW
         const string _referrer = "http://track.designcircuitworks.com/"; 
         public TimeTrackClass() {
 
+            propFormat = "--{0}" + newLine +
+                            "Content-Disposition: form-data; name=\"{1}\"" + newLine + newLine +
+                            "{2}" + newLine;
+            fileHeaderFormat = "--{0}" + newLine +
+                                     "Content-Disposition: form-data; name=\"{1}\"; filename=\"{2}\"" + newLine + "Content-Type: {3}" + newLine + newLine;
 
         }
 
-        public TimeTrackClass(ControlForm p)
+        public TimeTrackClass(ControlForm p):this()
         {
             TmrScr = new System.Timers.Timer(1000);
             TmrScr.Elapsed += TmrScr_Elapsed;
             TmrScr.AutoReset = true;
             _timeUpload = Properties.Settings.Default.Interval;
             P = p;
-            propFormat = "--" + boundary + newLine +
-                               "Content-Disposition: form-data; name=\"{0}\"" + newLine + newLine +
-                               "{1}" + newLine;
-           fileHeaderFormat = "--" + boundary + newLine +
-                                    "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"" + newLine + "Content-Type: {2}" + newLine + newLine;
             
-
 
         }
 
@@ -98,11 +97,11 @@ namespace DCW
             foreach (DictionaryEntry pair in _hash)
             {
 
-                requestdata += string.Format(propFormat, pair.Key, pair.Value);
+                requestdata += string.Format(propFormat,boundary, pair.Key, pair.Value);
 
             }
-
-            object result = wrkproc.AsyncRequest(new object[] { Server, requestdata, "post",true,_referrer,boundary});
+            //string url,string requestdata,string Method,bool _ismultipart,object[] param
+            object result = wrkproc.AsyncRequest(Server,requestdata,"post",true,new object[] { _referrer,boundary});
             if (result != null)
             {
               
@@ -180,13 +179,14 @@ namespace DCW
                 });
 
             }
-            P.lblinfo.Invoke((MethodInvoker)delegate {
-                P.lblinfo.Text = "";
-            });
+
 
             if (!_isStart)
             {
-               
+                P.lblinfo.Invoke((MethodInvoker)delegate {
+                    P.lblinfo.Text = "";
+                });
+
                 Properties.Settings.Default.Task = task;
                 Properties.Settings.Default.Save();
                 SetInterval = Properties.Settings.Default.Interval;
@@ -232,7 +232,7 @@ namespace DCW
                                                     Screen.PrimaryScreen.Bounds.Size,
                                                     CopyPixelOperation.SourceCopy);
 
-                        _filename = Application.StartupPath + "/data/tmp/" + _user + "--" + DateTime.Now.ToString("dd-MM-yyyy") + "--" + Guid.NewGuid().ToString("N") + ".jpg";
+                        _filename = Properties.Settings.Default.TmpFolder+"\\" + _user + "--" + DateTime.Now.ToString("dd-MM-yyyy") + "--" + Guid.NewGuid().ToString("N") + ".jpg";
                         bmpScreenshot.Save(_filename, ImageFormat.Jpeg);
                     }
                 }
@@ -252,6 +252,7 @@ namespace DCW
 
             });
 
+            boundary = "------WebKitFormBoundary" + Helper.GetUniqueKey(16);
 
             Hashtable _hash = new Hashtable();
             _hash.Add("user", _user);
@@ -269,18 +270,19 @@ namespace DCW
             foreach (DictionaryEntry pair in _hash)
             {
 
-                requestdata += string.Format(propFormat, pair.Key, pair.Value);
+                requestdata += string.Format(propFormat,boundary, pair.Key, pair.Value);
 
             }
             try
             {
-                requestdata += string.Format(fileHeaderFormat, "picture", System.IO.Path.GetFileName(_filename), "image/" + ImageFormat.Jpeg.ToString());
+                requestdata += string.Format(fileHeaderFormat, boundary,"picture", System.IO.Path.GetFileName(_filename), "image/" + ImageFormat.Jpeg.ToString());
             }
             catch { }
             WorkProcess wrkproc = new WorkProcess(this);
-            
 
-            object result = wrkproc.AsyncRequest(new object[] { Properties.Settings.Default.Server, requestdata, "post", true, _referrer, boundary, _filename });
+            //string url,string requestdata,string Method,bool _ismultipart,object[] param
+
+            object result = wrkproc.AsyncRequest(Properties.Settings.Default.Server,requestdata,"post",true, new object[] { _referrer, boundary, _filename });
             if (result == null)
             {
                 ErrorLog._WriteLog(_ERROR[3]);
@@ -346,7 +348,9 @@ namespace DCW
             System.Diagnostics.FileVersionInfo fileVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(CurrentAssembly.Location);
 
             WorkProcess wrkproc = new WorkProcess(this);
-            object result = wrkproc.AsyncRequest(new object[] { Properties.Settings.Default.UpdateServer, "", "get" });
+
+            //params: string url,string requestdata,string Method,bool _ismultipart,object[] param
+            object result = wrkproc.AsyncRequest(Properties.Settings.Default.UpdateServer,"","get",false);
             if (result == null)
             {
                 return result.ToString();

@@ -55,37 +55,56 @@ namespace DCW
             return str;
         }
 
-        internal object AsyncRequest(object obj) {
+        /*
+            Method name: AsyncRequest
+            Params 
+            url : Link to post/get request
+            requestdata : supplied data
+            method : get/post
+            _ismultipart : if is multipart
+            param: additional array objects
+        */
+
+        internal object AsyncRequest(string url,string requestdata,string Method,bool _ismultipart,object[] param=null) {
                 try
                 {
                     if (aborted)
                         throw new Exception();
+                   
 
-                    object[] context = obj as object[];
-                    string url = context[0] as string;
-                    string requestdata = (string)context[1];
-                    string Method=(string)context[2];
-                    bool _ismultipart = (bool)context[3];
                     string _boundary = null;
                     string _filename = null;
                     string _referrer = "";
 
-                    if (context.Length > 4) {
-                    _referrer = (string)context[4];
-                   
-                     }
-                    if (_ismultipart)
+                    //check if there is additional params
+                    if (param != null)
                     {
-                        _boundary = (string)context[5].ToString();
+                        if (param.Length > 0)
+                        {
+                            //referrer
+                            _referrer = (string)param[0].ToString();
 
-                    }
-                if (context.Length > 6) {
-                        _filename = (string)context[6]; 
-                    }
-                   
-                WebProxy proxy = null;                
+                            //if it is multipart , will need boundary
+                            if (_ismultipart && param.Length >= 2)
+                            {
+                                _boundary = (string)param[1].ToString();
 
+                            }
+
+                            //if supply with _filename
+                            if (param.Length >= 3)
+                            {
+                                _filename = (string)param[2].ToString();
+                            }
+
+                        }
+                    }
+                    
                    
+                    //proxy set to null
+                    WebProxy proxy = null;                
+
+                   //If uri is wrong, do nothing
                     if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute)) {
                    
                             return null;                    

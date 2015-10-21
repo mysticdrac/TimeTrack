@@ -14,5 +14,6 @@ C:\Users\Asus\Documents\Visual Studio 2015\Projects\DCW\WebAsyncReq\obj\Debug\We
 C:\Users\Asus\Documents\Visual Studio 2015\Projects\DCW\WebAsyncReq\obj\Debug\WebAsyncReq.pdb
 C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\WebAsyncReq\bin\Debug\WebAsyncReq.dll
 C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\WebAsyncReq\bin\Debug\WebAsyncReq.pdb
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\WebAsyncReq\obj\Debug\WebAsyncReq.csprojResolveAssemblyReference.cache
 C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\WebAsyncReq\obj\Debug\WebAsyncReq.dll
 C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\WebAsyncReq\obj\Debug\WebAsyncReq.pdb
