@@ -91,7 +91,7 @@ namespace DCW
                             return null;                    
                     }
                     req = new WebAsyncReq.WebAsyncReq();
-                    if (!string.IsNullOrEmpty(_boundary) && !string.IsNullOrEmpty(_filename)) {
+                    if (!string.IsNullOrEmpty(_filename)) {
                         req.SetFilename = _filename;
                     }
                     req.SetBoundary = _boundary;
