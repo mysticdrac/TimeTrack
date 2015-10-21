@@ -12,7 +12,7 @@ namespace DCW
 {
     public partial class MainFrm : Form
     {
-        //detect mouse button down for using 
+        
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
@@ -30,7 +30,7 @@ namespace DCW
         private void btnClose_Click(object sender, EventArgs e)
         {
 
-            DialogResult d = MessageBox.Show("Are you sure You want to quit ?", "Confirmation", MessageBoxButtons.YesNoCancel);
+            DialogResult d = MessageBox.Show("Are you sure You want to quit ? ", "Confirmation", MessageBoxButtons.YesNoCancel);
             if (d == DialogResult.Cancel || d == DialogResult.No)
             {
                 return;
@@ -61,7 +61,7 @@ namespace DCW
 
         void LoadCred(string _filepath)
         {
-            string[] _credtemp = System.IO.File.ReadAllLines(_filepath);//.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            string[] _credtemp = System.IO.File.ReadAllLines(_filepath);
             foreach (string _str in _credtemp)
             {
                 string[] _strarr = _str.Split(new string[] { "=" }, StringSplitOptions.None);

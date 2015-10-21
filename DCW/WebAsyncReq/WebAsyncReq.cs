@@ -13,6 +13,7 @@ namespace WebAsyncReq
 {
     public class WebAsyncReq : MarshalByRefObject
     {
+        #region Initialize Variables
         ManualResetEvent allDone = new ManualResetEvent(false);
         const int BUFFER_SIZE = 8192;
         bool aborted = false;
@@ -28,9 +29,39 @@ namespace WebAsyncReq
         string _boundary = "";
         string _filename = null;
         string _referrer = "";
-        public bool SetSSL {
+        #endregion
 
-            set {
+
+        #region Get and Set Variables methods
+
+        public void Abort()
+        {
+            aborted = true;
+
+        }
+
+        public bool SetRedirect
+        {
+            set
+            {
+                _redirect = value;
+            }
+        }
+
+        public string SetReferrer
+        {
+            set
+            {
+
+                _referrer = value;
+            }
+
+        }
+        public bool SetSSL
+        {
+
+            set
+            {
                 SSL = value;
             }
         }
@@ -43,49 +74,83 @@ namespace WebAsyncReq
             }
         }
 
-        public bool _IsMultipart {
-            set {
+        public bool _IsMultipart
+        {
+            set
+            {
 
                 _ismultipart = value;
             }
 
         }
-        public string SetFilename {
-            set {
+        public string SetFilename
+        {
+            set
+            {
 
                 _filename = value;
             }
 
         }
-        public CookieContainer SetCookies {
-            set {
+        public CookieContainer SetCookies
+        {
+            set
+            {
                 Cookies = value;
             }
 
         }
 
-        public int SetTimeOut {
-            set {
+        public int SetTimeOut
+        {
+            set
+            {
                 DefaultTimeout = value;
 
             }
 
         }
-        public string SetPostData {
-            set {
+        public string SetPostData
+        {
+            set
+            {
                 _Postdata = value;
             }
 
         }
 
-        public WebHeaderCollection GetResponseHeader {
-            get {
+        public WebHeaderCollection GetResponseHeader
+        {
+            get
+            {
 
                 return rstop.Response.Headers;
             }
 
         }
 
+        public bool IsXmlRequest
+        {
+
+            set
+            {
+
+                _IsXMLRequest = value;
+            }
+        }
+
+        public string SetBoundary
+        {
+            set
+            {
+
+                _boundary = value;
+            }
+
+        }
+        #endregion
+
+        #region Validate Remote Certificate
         private static bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
         {
             // If the certificate is a valid, signed certificate, return true.
@@ -96,24 +161,13 @@ namespace WebAsyncReq
 
             return false;
         }
+        #endregion
 
-        public bool IsXmlRequest {
 
-            set {
 
-                _IsXMLRequest = value;
-            }
-        }
-
-        public string SetBoundary {
-            set {
-
-                _boundary = value;
-            }
-
-        }
-
-        void Initialize(ref HttpWebRequest request) {
+        #region Initialize httpclient header etc
+        void Initialize(ref HttpWebRequest request)
+        {
             if (SSL)
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
@@ -130,7 +184,8 @@ namespace WebAsyncReq
                 request.CookieContainer = Cookies;
                 //request.Headers.Add("Cookie", Cookies);
             }
-            if (!_redirect) {
+            if (!_redirect)
+            {
                 request.AllowAutoRedirect = false;
             }
             bool post = false;
@@ -147,7 +202,8 @@ namespace WebAsyncReq
                     {
                         request.ContentLength = _Postdata.Length + File.ReadAllBytes(_filename).Length + footer.Length;
                     }
-                    else {
+                    else
+                    {
                         request.ContentLength = _Postdata.Length + footer.Length;
 
 
@@ -163,24 +219,27 @@ namespace WebAsyncReq
                 request.Method = "POST";
                 post = true;
             }
-            if (_IsXMLRequest) {
+            if (_IsXMLRequest)
+            {
                 request.Headers.Add("X-Requested-With", "XMLHttpRequest");
 
             }
 
-            if (!string.IsNullOrEmpty(_referrer)) {
+            if (!string.IsNullOrEmpty(_referrer))
+            {
 
                 request.Referer = _referrer;
 
             }
 
-                request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*,;q=0.8";
+            request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*,;q=0.8";
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Dragon/33.1.0.0 Chrome/33.0.1750.152 Safari/537.36";
             request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
             request.Timeout = 5000;
             request.ProtocolVersion = HttpVersion.Version11;
             request.ServicePoint.Expect100Continue = false;
-            if (post) {
+            if (post)
+            {
 
                 request.BeginGetRequestStream(new AsyncCallback(GetRequestStreamCallback), request);
                 allDone.WaitOne();
@@ -189,20 +248,10 @@ namespace WebAsyncReq
             }
 
         }
+        #endregion
 
-        public bool SetRedirect {
-            set {
-                _redirect = value;
-            }
-        }
 
-        public string SetReferrer {
-            set {
-
-                _referrer = value;
-            }
-
-        }
+        #region Call back write to request stream
         void GetRequestStreamCallback(IAsyncResult asynchronousResult)
         {
             try
@@ -231,16 +280,20 @@ namespace WebAsyncReq
                 postStream.Close();
                 allDone.Set();
             }
-            catch {
+            catch
+            {
                 allDone.Set();
 
             }
 
         }
+        #endregion
 
-        public object Request(string url,WebProxy proxy)
+        #region Request Operation
+
+        public object Request(string url, WebProxy proxy)
         {
-           
+
             object result = null;
             try
             {
@@ -249,18 +302,18 @@ namespace WebAsyncReq
 
                 rstop = new RequestState();
 
-               HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+
                 request.Proxy = proxy;
-                request.KeepAlive = false;              
-                
+                request.KeepAlive = false;
+
                 Initialize(ref request);
 
                 rstop.Request = request;
                 Stopwatch st = new Stopwatch();
                 st.Start();
                 IAsyncResult r = (IAsyncResult)request.BeginGetResponse(new AsyncCallback(RespCallback), rstop);
-                ThreadPool.RegisterWaitForSingleObject(r.AsyncWaitHandle, new WaitOrTimerCallback(TimeoutCallback), rstop.Request, DefaultTimeout, true); 
+                ThreadPool.RegisterWaitForSingleObject(r.AsyncWaitHandle, new WaitOrTimerCallback(TimeoutCallback), rstop.Request, DefaultTimeout, true);
                 allDone.WaitOne();
                 st.Stop();
                 Debug.WriteLine(st.ElapsedMilliseconds);
@@ -290,7 +343,7 @@ namespace WebAsyncReq
                     rstop.ResponseStream.Close();
                     Thread.Sleep(100);
                 }
-                
+
 
             }
             catch (Exception)
@@ -299,9 +352,11 @@ namespace WebAsyncReq
                 throw new Exception();
             }
 
-            return result ;
+            return result;
         }
-        
+        #endregion
+
+        #region Response Callback
         void RespCallback(IAsyncResult ar)
         {
             RequestState rs = null;
@@ -321,11 +376,11 @@ namespace WebAsyncReq
                     ResponseStream = resp.GetResponseStream();
                     rs.ResponseStream = ResponseStream;
                     rs.Response = resp;
-                    
-                    
+
+
                     iarRead = ResponseStream.BeginRead(rs.BufferRead, 0, BUFFER_SIZE, new AsyncCallback(ReadCallBack), rs);
-                    
-                    
+
+
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -351,7 +406,9 @@ namespace WebAsyncReq
             }
 
         }
-        
+        #endregion
+
+        #region ReadCallback
         void ReadCallBack(IAsyncResult asyncResult)
         {
             Stream responseStream = null;
@@ -363,7 +420,7 @@ namespace WebAsyncReq
 
                 RequestState rs = (RequestState)asyncResult.AsyncState;
                 responseStream = rs.ResponseStream;
-                
+
                 int read = responseStream.EndRead(asyncResult);
 
                 if (read > 0)
@@ -375,11 +432,12 @@ namespace WebAsyncReq
                         string str = new String(charBuffer, 0, len);
                         rs.RequestData.Append(Encoding.ASCII.GetString(rs.BufferRead, 0, read));
                     }
-                    else {
+                    else
+                    {
 
-                        rs.RequestByte.Write(rs.BufferRead,0,read);
+                        rs.RequestByte.Write(rs.BufferRead, 0, read);
                     }
-                    
+
                     try
                     {
                         ar = responseStream.BeginRead(rs.BufferRead, 0, BUFFER_SIZE, new AsyncCallback(ReadCallBack), rs);
@@ -413,14 +471,12 @@ namespace WebAsyncReq
 
             }
             return;
-        }
-        
-        public void Abort()
-        {
-            aborted = true;
+        } 
+        #endregion
 
-        }
 
+
+        #region TimeOut
         void TimeoutCallback(object state, bool timedOut)
         {
             if (timedOut || aborted)
@@ -431,6 +487,7 @@ namespace WebAsyncReq
                     request.Abort();
                 }
             }
-        }
+        } 
+        #endregion
     }
 }

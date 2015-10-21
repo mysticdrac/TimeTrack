@@ -16,8 +16,6 @@ namespace WebAsyncReq
         // Create Decoder for appropriate enconding type.
         internal Decoder StreamDecode;
         internal WebResponse Response;
-        internal string PostData;
-        //bool disposed;
         public RequestState()
         {
             BufferRead = new byte[BufferSize];
@@ -27,7 +25,6 @@ namespace WebAsyncReq
             Response = null;
             StreamDecode = Encoding.UTF8.GetDecoder();
             RequestByte=new MemoryStream();
-            //disposed = false;
         }
 
     }

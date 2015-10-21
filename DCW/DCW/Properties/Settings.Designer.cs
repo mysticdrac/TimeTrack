@@ -151,5 +151,29 @@ namespace DCW.Properties {
                 this["TmpFolder"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public uint WorkTime {
+            get {
+                return ((uint)(this["WorkTime"]));
+            }
+            set {
+                this["WorkTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        public uint IdleTime {
+            get {
+                return ((uint)(this["IdleTime"]));
+            }
+            set {
+                this["IdleTime"] = value;
+            }
+        }
     }
 }

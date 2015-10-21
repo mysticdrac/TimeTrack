@@ -15,9 +15,9 @@ namespace DCW
             [return: MarshalAs(UnmanagedType.Bool)]
             static extern bool SetForegroundWindow(IntPtr hWnd);
         #endregion
-        /// <summary>
+
+
         #region Main Entry Point For Application
-        /// </summary>
         [STAThread]
         static void Main()
         {
