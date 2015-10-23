@@ -94,7 +94,7 @@ namespace DCW
         #endregion
 
 
-        #region TmrScr Elapsed action
+        #region ScreenShot Elapsed action
         private void TmrScr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             
