@@ -3,25 +3,31 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.Collections;
+using System.Runtime.Serialization.Json;
+using System.IO;
+using System.Text;
+using System.Threading;
 namespace DCW
 {
     class TimeTrackClass
     {
         #region Initialize variables
-        bool _isStart = false;
+        internal bool _isStart = false;
         System.Timers.Timer TmrScr;
         System.Timers.Timer WorkTmr;
         ControlForm P;
         uint _timeUpload = 0;
         uint _worktick = 0;
         uint _tick = 0;
-        string _task = "";
         string _user = "";
         string _pass = "";
         string newLine = Environment.NewLine;
         string boundary = "";
         string propFormat;
         string fileHeaderFormat;
+        Project _CurProject;
+        Task _CurTask;
+        JsonResp _response;
         string[] _ERROR = new string[8]
         {
             "Collecting Report.....",
@@ -63,29 +69,32 @@ namespace DCW
             WorkTmr.Elapsed += WorkTmr_Elapsed;
             WorkTmr.AutoReset = true;
 
-
             _timeUpload = Properties.Settings.Default.Interval;
             P = p;
-            
+            _response = P._response;
+
+
 
         }
 
         private void WorkTmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             WorkTmr.Stop();
-            if (DetectIdle.GetIdleTime() > maxidletime)
+            //save the current daily worktime every minute has changed
+            if (_worktick % 60 == 0)
             {
-                TmrScr.Stop();
-                StopBtn_Capture(_ERROR[7]);
-                return;
-            }
-            if (_worktick % 60 == 0) {
                 Properties.Settings.Default.WorkTime = _worktick;
                 Properties.Settings.Default.Save();
             }
+            //if already 4 hours, will pop up message box for fill in work summary
+            if (_worktick % 14400 == 0) {
+                //pop up the messagebox from parent
+
+            }
+
 
             _worktick++;
-            
+
 
             _timetotalWork = TimeSpan.FromSeconds(_worktick);
             P.lbltime.Invoke((MethodInvoker)delegate { P.lbltime.Text = string.Format("{0:00}:{1:D2}:{2:D2}", Math.Floor(_timetotalWork.TotalHours), _timetotalWork.Minutes, _timetotalWork.Seconds); }, _timetotalWork);
@@ -97,15 +106,23 @@ namespace DCW
         #region ScreenShot Elapsed action
         private void TmrScr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            
+            if (DetectIdle.GetIdleTime() > maxidletime)
+            {
+                TmrScr.Stop();
+                StopBtn_Capture(_ERROR[7]);
+                return;
+            }
             _tick++;
             if (_tick == _timeUpload)
             {
-                uploadScreenshot(_worktick);
+                uploadScreenshot(_worktick,true);
                 
             }
             /*detect idle time*/
-            System.Diagnostics.Debug.WriteLine(DetectIdle.GetIdleTime().ToString() + " time:" + TimeSpan.FromMilliseconds(DetectIdle.GetIdleTime()).ToString() );
+            TimeSpan _totalhourtask = TimeSpan.FromSeconds(_tick);
+
+            P.lblhour.Invoke((MethodInvoker)delegate { P.lblhour.Text = string.Format("{0:00}:{1:D2}:{2:D2}", Math.Floor(_totalhourtask.TotalHours), _totalhourtask.Minutes, _totalhourtask.Seconds); }, _totalhourtask);
+
         }
         #endregion
 
@@ -127,7 +144,7 @@ namespace DCW
         #endregion
 
         #region Login Method
-        internal int Login(object[] obj)
+        internal object Login(object[] obj)
         {
             string Username = (string)obj[0];
             string Password = (string)obj[1];
@@ -152,45 +169,29 @@ namespace DCW
             object result = wrkproc.AsyncRequest(Server, requestdata, "post", true, new object[] { _referrer, boundary });
             if (result != null)
             {
-
-                if (result.ToString().ToLower().IndexOf("received") > -1)
+                try
                 {
-
-
-                    Properties.Settings.Default.Username = Username;
-                    Properties.Settings.Default.Password = Password;
-                    Properties.Settings.Default.Server = Server;
-                    Properties.Settings.Default.Save();
-                    try
+                   
+                    _response = Deserialize<JsonResp>(result.ToString());
+                   
+                    if (!_response.status.ToLower().Equals("ok"))
                     {
-                        string[] _resarr = result.ToString().Split(new string[] { ":" }, StringSplitOptions.None);
-                        if (_resarr.Length > 0)
-                        {
-
-
-                            try
-                            {
-                                Properties.Settings.Default.Interval = uint.Parse(_resarr[1].ToString());
-                                Properties.Settings.Default.Save();
-
-
-
-                            }
-                            catch
-                            {
-
-
-                            }
-                        }
+                       
+                        return 1;
                     }
-                    catch { }
-
-                    return 0;
+                    else {
+                        Properties.Settings.Default.Username = Username;
+                        Properties.Settings.Default.Password = Password;
+                        Properties.Settings.Default.Server = Server;
+                        Properties.Settings.Default.Interval = _response.time;
+                        Properties.Settings.Default.Save();
+                        return _response;
+                    }
 
                 }
-                else
-                {
-                    return 1;
+                catch {
+
+                    return 2;
 
                 }
 
@@ -200,8 +201,20 @@ namespace DCW
 
                 return 2;
             }
+            
         }
         #endregion
+
+        private T Deserialize<T>(string json)
+        {
+            var instance = Activator.CreateInstance<T>();
+            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+            {
+                var serializer = new DataContractJsonSerializer(instance.GetType());
+                return (T)serializer.ReadObject(ms);
+            }
+        }
+
 
         #region Collection of Action when Stop button pressed
         void StopBtn_Capture(string _text)
@@ -225,7 +238,7 @@ namespace DCW
 
         #region Start Button Pressed Action
 
-        internal void Start(string task)
+        internal void Start(string _project,string _task)
         {
             if (P.btn_capture.FlatAppearance.BorderSize != 1)
             {
@@ -238,7 +251,7 @@ namespace DCW
                 });
 
             }
-
+           
 
             if (!_isStart)
             {
@@ -246,7 +259,46 @@ namespace DCW
                 {
                     P.lblinfo.Text = "";
                 });
+                //Get the current _project and _task
+                foreach (Project _proj in _response.Project) {
+                    if (_proj.name.Equals(_project))
+                    {     _CurProject = _proj;
+                        foreach (Task _t in _proj.Task) {
+                            if (_t.name.Equals(_task)) {
+                                _CurTask = _t;
+                                break;
+
+                            }
+
+                        }
+                    }
+
+                }
+                if (_CurProject == null || _CurTask == null) {
+                    MessageBox.Show("Task / Project not found");
+                    P.cbbxproject.Invoke((MethodInvoker)delegate {
+                        P.cbbxproject.Enabled = true;
+
+
+                    });
+                    P.cbbxtask.Invoke((MethodInvoker)delegate {
+                        P.cbbxtask.Enabled = true;
+
+
+                    });
+                    P.btn_capture.Invoke((MethodInvoker)delegate {
+                        P.btn_capture.Enabled = true;
+
+                    });
+                    return;
+                }
+                //set the start timer to latest task time
+                _tick = _CurTask.time;
+
+
+                //set the daily work timer to the last time it stops
                 _worktick = Properties.Settings.Default.WorkTime;
+
 
                 P.lbltime.Invoke((MethodInvoker)delegate {
 
@@ -254,32 +306,83 @@ namespace DCW
 
                 });
 
-                WorkTmr.Start();
-                Properties.Settings.Default.Task = task;
+                Properties.Settings.Default.Project = _CurProject.name;
+                Properties.Settings.Default.Task = _CurTask.name;
                 Properties.Settings.Default.Save();
                 SetInterval = Properties.Settings.Default.Interval;
                 _user = Properties.Settings.Default.Username;
                 _pass = Properties.Settings.Default.Password;
+                System.ComponentModel.BackgroundWorker _worker = new System.ComponentModel.BackgroundWorker();
+                _worker.DoWork += (s,es)=>{
+                    uint t = (uint)es.Argument;
+                    uploadScreenshot(t, true);
+
+
+                };
+                _worker.RunWorkerAsync(_worktick);
+                WorkTmr.Start();
                 TmrScr.Start();
-                P.btn_capture.Invoke((MethodInvoker)delegate { P.btn_capture.Text = "Stop Capture"; });
-                _isStart = true;
                 
+                P.btn_capture.Invoke((MethodInvoker)delegate {
+                    P.btn_capture.Enabled = true;
+                    P.btn_capture.Text = "Stop Capture";
+
+
+                });
+                _isStart = true;
+                P.cbbxproject.Invoke((MethodInvoker)delegate {
+                    P.cbbxproject.Enabled = true;
+
+
+                });
+                P.cbbxtask.Invoke((MethodInvoker)delegate {
+                    P.cbbxtask.Enabled = true;
+
+
+                });
+            
+
             }
             else
             {
                 _task = "";
                 _tick = 0;
-
-                TmrScr.Stop();
                 WorkTmr.Stop();
+                TmrScr.Stop();
+                System.ComponentModel.BackgroundWorker _worker = new System.ComponentModel.BackgroundWorker();
+                _worker.DoWork += (s, es) => {
+                    uint t = (uint)es.Argument;
+                    uploadScreenshot(t, false);
+
+
+                };
+                _worker.RunWorkerAsync(_worktick);
                 Properties.Settings.Default.WorkTime = _worktick;
                 Properties.Settings.Default.Save();
-                P.btn_capture.Invoke((MethodInvoker)delegate { P.btn_capture.Text = "Start Capture"; });
+                P.btn_capture.Invoke((MethodInvoker)delegate {
+                    P.btn_capture.Enabled = true;
+                    P.btn_capture.Text = "Start Capture";
+
+                });
                 _isStart = false;
+                P.cbbxproject.Invoke((MethodInvoker)delegate {
+                    P.cbbxproject.Enabled = true;
+
+
+                });
+                P.cbbxtask.Invoke((MethodInvoker)delegate {
+
+                    P.cbbxtask.Enabled = true;
+
+                });
             }
 
         }
+
+
         #endregion
+
+
 
         #region Taking Screenshot
         string screenShot()
@@ -324,7 +427,7 @@ namespace DCW
         #endregion
 
         #region Process upload Screenshot to Server
-        void uploadScreenshot(uint _workticktemp)
+        void uploadScreenshot(uint _workticktemp,bool _start)
         {
             P.lblinfo.Invoke((MethodInvoker)delegate
             {
@@ -337,9 +440,16 @@ namespace DCW
             Hashtable _hash = new Hashtable();
             _hash.Add("user", _user);
             _hash.Add("pass", _pass);
-            _hash.Add("task", _task);
-            _hash.Add("start", "start");
+            _hash.Add("task", Properties.Settings.Default.Task);
+            if (_start)
+            {
+                _hash.Add("start", "start");
+            }
+            else {
 
+                _hash.Add("stop", "stop");
+
+            }
 
             string _filename = screenShot();
             if (_filename == null)
@@ -373,13 +483,14 @@ namespace DCW
             }
             else
             {
-                if (result.ToString().ToLower().IndexOf("received") < 0)
+                ScResp resp = Deserialize<ScResp>(result.ToString());
+                if (!resp.status.ToLower().Equals("ok"))
                 {
+
                     ErrorLog._WriteLog(_ERROR[4]);
                     StopBtn_Capture(_ERROR[4]);
                 }
-                else
-                {
+                else {
                     try
                     {
                         System.IO.File.Delete(_filename);
@@ -391,38 +502,40 @@ namespace DCW
 
                     }
 
-                    string[] _resarr = result.ToString().Split(new string[] { ":" }, StringSplitOptions.None);
-                    if (_resarr.Length > 0)
+                    //if stop will get the totaltime for current task from server and update it to show to user
+                    if (!_start)
                     {
-
-
-                        try
+                        foreach (Project _p in _response.Project)
                         {
-                            //Parsing the response and split it to get the second string (time interval)
-                            uint interval = uint.Parse(_resarr[1].ToString());
-
-                            //set interval into time elapsed now + interval
-                            SetInterval = _tick + interval;
-
-                            //save interval incase error occured
-                            Properties.Settings.Default.Interval = interval;
-                            Properties.Settings.Default.Save();
-
-
-                            P.lblinfo.Invoke((MethodInvoker)delegate
+                            if (_p.name.Equals(_CurProject.name))
                             {
-                                P.lblinfo.Text = _ERROR[5] + " at " + TimeSpan.FromSeconds(_workticktemp).ToString();
-
-                            }, _ERROR[5]);
-
+                                foreach (Task _t in _p.Task)
+                                {
+                                    if (_t.name.Equals(_CurTask))
+                                    {
+                                        _t.time = resp.tottime;
+                                    }
+                                }
+                            }
                         }
-                        catch
-                        {
-                            ErrorLog._WriteLog(_ERROR[6]);
-                            StopBtn_Capture(_ERROR[6]);
 
-                        }
+
                     }
+                    //set interval into time elapsed now + interval
+                    SetInterval = _tick + resp.time;
+
+                    //save interval incase error occured
+                    Properties.Settings.Default.Interval = resp.time;
+                    Properties.Settings.Default.Save();
+
+                    //set label info to show status upload
+                    P.lblinfo.Invoke((MethodInvoker)delegate
+                    {
+                        P.lblinfo.Text = _ERROR[5] + " at " + TimeSpan.FromSeconds(_workticktemp).ToString();
+
+                    }, _ERROR[5]);
+
+
                 }
             }
         }

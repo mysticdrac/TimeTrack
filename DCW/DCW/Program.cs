@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
@@ -70,6 +67,28 @@ namespace DCW
             Properties.Settings.Default.LogFolder = paths[1];
             Properties.Settings.Default.TmpFolder = paths[2];
             Properties.Settings.Default.IniLocation = inifile;
+
+            //check if new date
+            DateTime _now = new DateTime();
+
+            if (Properties.Settings.Default.StartAppDate == null)
+            {
+
+                Properties.Settings.Default.StartAppDate = _now;
+                Properties.Settings.Default.WorkTime = 0;
+            }
+            else
+            {
+                if (_now.Day > Properties.Settings.Default.StartAppDate.Day)
+                {
+                    Properties.Settings.Default.StartAppDate = _now;
+                    Properties.Settings.Default.WorkTime = 0;
+
+
+                }
+
+            }
+
             Properties.Settings.Default.Save();
 
             System.Diagnostics.Debug.WriteLine(Properties.Settings.Default.DataFolder);

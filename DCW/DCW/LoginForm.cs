@@ -111,33 +111,49 @@ namespace DCW
             };
 
             _worker.RunWorkerCompleted += (s, es) => {
-                int result = (int)es.Result;
+                object result = (object)es.Result;
+
                 string text = "";
-                switch (result)
+                if (result.GetType().Equals(typeof(int)))
                 {
-                    case 0:
-                        text = "Logged in";
-                        break;
-                    case 1:
-                        text = "Incorrect Username/Password/Server";
-                        break;
-                    case 2:
-                        text = "Connection Problem";
-                        break;
+                    switch ((int)result)
+                    {
+                        case 1:
+                            text = "Incorrect Username/Password/Server";
+                            break;
+                        case 2:
+                            text = "Connection Problem";
+                            break;
+                    }
+                }
+                else if (result.GetType().Equals(typeof(JsonResp)))
+                {
+
+                    text = "logged in";
+
+                }
+                else {
+                    text = "Server Error";
+
                 }
                 label1.Invoke((MethodInvoker)delegate
                 {
                     label1.Visible = true;
                     label1.Text = text;
                 },text);
-                if (result == 0)
+
+
+                if (result.GetType().Equals(typeof(JsonResp)))
                 {
+                    P.setJson=(JsonResp)result;
                     P.ShowCtrl();
                 }
             };
             _worker.RunWorkerAsync(new object[] { this.txbx_user.Text.Trim(), this.txbx_pass.Text.Trim(), Properties.Settings.Default.Server } );
 
         }
+
+        
 
         private void chkbx_remember_CheckStateChanged(object sender, EventArgs e)
         {

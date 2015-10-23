@@ -175,5 +175,28 @@ namespace DCW.Properties {
                 this["IdleTime"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Project {
+            get {
+                return ((string)(this["Project"]));
+            }
+            set {
+                this["Project"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime StartAppDate {
+            get {
+                return ((global::System.DateTime)(this["StartAppDate"]));
+            }
+            set {
+                this["StartAppDate"] = value;
+            }
+        }
     }
 }

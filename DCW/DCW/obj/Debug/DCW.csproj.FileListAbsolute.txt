@@ -1,0 +1,17 @@
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\bin\Debug\data\Log\dummy.txt
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\bin\Debug\data\tmp\dummy.txt
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\bin\Debug\data\Timetrack.ini
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\bin\Debug\TimeTrack.exe.config
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\bin\Debug\TimeTrack.exe
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\bin\Debug\TimeTrack.pdb
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\bin\Debug\WebAsyncReq.dll
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\bin\Debug\WebAsyncReq.pdb
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\obj\Debug\DCW.csprojResolveAssemblyReference.cache
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\obj\Debug\DCW.ControlForm.resources
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\obj\Debug\DCW.LoginForm.resources
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\obj\Debug\DCW.MainFrm.resources
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\obj\Debug\DCW.Properties.Resources.resources
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\obj\Debug\DCW.WorkSummaryFrm.resources
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\obj\Debug\DCW.csproj.GenerateResource.Cache
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\obj\Debug\TimeTrack.exe
+C:\Users\Asus\Documents\GitHub\TimeTrack\DCW\DCW\obj\Debug\TimeTrack.pdb

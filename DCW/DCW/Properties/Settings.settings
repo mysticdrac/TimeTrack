@@ -41,5 +41,11 @@
     <Setting Name="IdleTime" Type="System.UInt32" Scope="User">
       <Value Profile="(Default)">300</Value>
     </Setting>
+    <Setting Name="Project" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="StartAppDate" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

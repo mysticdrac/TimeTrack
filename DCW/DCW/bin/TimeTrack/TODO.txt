@@ -1,0 +1,11 @@
+1.Need Ross to change the response when stop to:
+  {
+	"status": "ok",
+	"time": "10",
+	"tottime":"100000"
+  }
+
+field added :
+"tottime" => total hours spent for the task
+
+all done!

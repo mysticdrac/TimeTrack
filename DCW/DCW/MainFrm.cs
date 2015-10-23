@@ -13,14 +13,14 @@ namespace DCW
     public partial class MainFrm : Form
     {
         
-        public const int WM_NCLBUTTONDOWN = 0xA1;
-        public const int HT_CAPTION = 0x2;
+        private const int WM_NCLBUTTONDOWN = 0xA1;
+        private const int HT_CAPTION = 0x2;
 
         [DllImportAttribute("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        private static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
         [DllImportAttribute("user32.dll")]
-        public static extern bool ReleaseCapture();
-
+        private static extern bool ReleaseCapture();
+        internal JsonResp resp;
         public MainFrm()
         {
             InitializeComponent();
@@ -48,7 +48,10 @@ namespace DCW
             WindowState = FormWindowState.Minimized;
 
         }
-       
+        void SetWorktime() {
+
+
+        }
         
         private void MainFrm_Load(object sender, EventArgs e)
         {
@@ -57,8 +60,25 @@ namespace DCW
             LoginForm frm = new LoginForm(this);
             groupBox2.Controls.Add(frm);
             frm.Dock = DockStyle.Fill;
+          
         }
+        internal JsonResp setJson
+        {
 
+            get
+            {
+
+                return resp;
+            }
+            set
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    resp = value;
+                });
+            }
+
+        }
         void LoadCred(string _filepath)
         {
             string[] _credtemp = System.IO.File.ReadAllLines(_filepath);
